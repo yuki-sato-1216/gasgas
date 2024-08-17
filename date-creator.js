@@ -23,7 +23,7 @@
 
 // 掲載期間計算関数
 function calcDateToPublish() {
-  const DAY_OF_WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];
+  const DAY_OF_WEEK = ["日", "月", "火", "水", "木", "金", "土"];
 
   // 掲載パターンenumもどき
   const PublishPattern = Object.freeze({
@@ -56,9 +56,9 @@ function calcDateToPublish() {
   const sheet5 = SpreadsheetApp.getActive().getSheetByName("シート5");
 
   const inputDatas = sheet4
-                      .getRange(INPUT_RANGE)
-                      .getValues()
-                      .flat();
+    .getRange(INPUT_RANGE)
+    .getValues()
+    .flat();
   // console.log("inputDatas is", inputDatas);
 
   // 作品ID（数値: 1～9999の値）
@@ -84,7 +84,7 @@ function calcDateToPublish() {
   // 既存データがある場合は削除
   const existingDataRange = sheet5.getRange(2, 1, sheet5.getLastRow(), sheet5.getLastColumn());
   if (existingDataRange.getNumRows() > 0) {
-      existingDataRange.clearContent();
+    existingDataRange.clearContent();
   }
 
   // console.log("パターンごとの日付計算 - START");
@@ -235,7 +235,7 @@ function calcDateToPublish() {
     // 曜日を取得
     const weekDay = date.getDay();
 
-    console.log("[getNthWeekAndWeekDayFromDate]: TargetDate:", {nthWeek, weekDay});
+    console.log("[getNthWeekAndWeekDayFromDate]: TargetDate:", { nthWeek, weekDay });
     return {
       nthWeek,
       weekDay,
@@ -281,8 +281,8 @@ function calcDateToPublish() {
 
   // 数値からenumの値を取得する関数
   function createPublishPattern(number) {
-      const patternName = Object.keys(PublishPattern)[number - 1];
-      return PublishPattern[patternName];
+    const patternName = Object.keys(PublishPattern)[number - 1];
+    return PublishPattern[patternName];
   }
 
   // 掲載パターンに沿う2つ目の週を取得する関数
@@ -446,10 +446,10 @@ function calcDateToPublish() {
   function getPreviousStartDate(targetSheet, tmpRowData) {
     //console.log("[getPreviousStartDate]: tmpRowData:", tmpRowData);
     return new Date(
-          tmpRowData !== undefined 
-          ? tmpRowData
-          : getLastStartDateFromSheet(targetSheet)
-        );
+      tmpRowData !== undefined
+        ? tmpRowData
+        : getLastStartDateFromSheet(targetSheet)
+    );
   }
 
   // 4話以降の掲載終了日をセットする関数
@@ -467,16 +467,16 @@ function calcDateToPublish() {
     // - Dateにした後フォーマットする
     // - 前の処理で作成した終了日調整用の3話分を追加
     const allStartDateList = sheet5
-            .getRange(
-              ROW_FOR_SETTING_END_DATE,
-              COLUMN_FOR_START_DATE,
-              targetSheet.getLastRow()
-            )
-            .getValues()
-            .flat()
-            .filter(value => value !== '' && value !== undefined)
-            .map(rowData => formatDateWithTime(new Date(rowData)))
-            .concat(additionalTmpRowDatas);
+      .getRange(
+        ROW_FOR_SETTING_END_DATE,
+        COLUMN_FOR_START_DATE,
+        targetSheet.getLastRow()
+      )
+      .getValues()
+      .flat()
+      .filter(value => value !== '' && value !== undefined)
+      .map(rowData => formatDateWithTime(new Date(rowData)))
+      .concat(additionalTmpRowDatas);
 
     let endDateRowData;
     for (let i = 0; i < allStartDateList.length; i++) {
@@ -528,7 +528,7 @@ function calcDateToPublish() {
     targetRange.setValues(rowData);
 
     if (!isLastEpisode) { return; }
-    
+
     /* ========= 終了日調整用の3話を追加する処理 ========= */
     {
       // 最後話数から+3話分を作成しておく
@@ -602,7 +602,7 @@ function calcDateToPublish() {
     targetRange.setValues(rowData);
 
     if (!isLastEpisode) { return; }
-    
+
     /* ========= 終了日調整用の3話を追加する処理 ========= */
     {
       // 最後話数から+3話分を作成しておく
@@ -676,7 +676,7 @@ function calcDateToPublish() {
     targetRange.setValues(rowData);
 
     if (!isLastEpisode) { return; }
-    
+
     /* ========= 終了日調整用の3話を追加する処理 ========= */
     {
       // 最後話数から+3話分を作成しておく
@@ -701,65 +701,4 @@ function calcDateToPublish() {
       console.log("[handleDoubleNthWeekOfMonth]: Setup End Date - END");
     }
   }
-}
-
-// シート1のIDとシート2のIDが完全一致したら書き込む
-function getDataByID() {
-  // コピー対象データの行範囲
-  const TARGET_RANGE_FOR_DATA_TO_COPY = "A2:A21";
-  // 検索対象タイトルの行範囲
-  const TARGET_RANGE_FOR_TITLE_TO_SEARCH = "A2:A21";
-
-  const sheet1 = SpreadsheetApp.getActive().getSheetByName("シート1");
-  const sheet2 = SpreadsheetApp.getActive().getSheetByName("シート2");
-  const sheet3 = SpreadsheetApp.getActive().getSheetByName("シート3");
-
-  // シート1からタイトル行を取得
-  const title = sheet1
-                .getRange(1, 1, 1, sheet1.getLastColumn())
-                .getValues()[0];
-
-  // 既存データがある場合は削除
-  const existingDataRange = sheet3.getRange(2, 1, sheet3.getLastRow(), sheet3.getLastColumn());
-  if (existingDataRange.getNumRows() > 0) {
-    existingDataRange.clearContent();
-  }
-
-  // タイトル行を書き込み
-  sheet3
-    .getRange(1, 1, 1, title.length)
-    .setValues([title]);
-
-  // シート2 検索値タイトルリストから検索対象列を取得
-  const searchValues = sheet2
-                        .getRange(TARGET_RANGE_FOR_TITLE_TO_SEARCH)
-                        .getValues()
-                        .flat();
-  console.log("searchValues is", searchValues);
-
-  // シート1（書誌）から検索対象を取得
-  let i = 0;
-  let matchData;
-
-  console.log("Loop for Write - START");
-  while (i < searchValues.length &&
-    (matchData = sheet1
-                  .getRange(TARGET_RANGE_FOR_DATA_TO_COPY)
-                  .createTextFinder(searchValues[i].toString())
-                  .matchCase(true)
-                  .findNext()))
-  {
-    //console.log("matchData: ID[%s] - Row is[%s]", matchData.getValue(), matchData.getRow());
-
-    // 指定行取得
-    const rowData = sheet1.getRange(matchData.getRow(), 1, 1, sheet1.getLastColumn()).getValues()[0];
-
-    // データを書き込み
-    sheet3
-      .getRange(sheet3.getLastRow() + 1, 1, 1, rowData.length)
-      .setValues([rowData]);
-
-    i++;
-  }
-  console.log("Loop for Write - END");
 }
