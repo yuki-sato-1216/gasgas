@@ -104,6 +104,8 @@ function calcDateToPublish() {
 
     const isSameDateWithFirstNthWeekDate = publishStartDate.getTime() === firstDateOfWeekdayOfMonth.getTime();
     const isSameDateWithSecondNthWeekDate = publishStartDate.getTime() === firstDateOfWeekdayOfMonth.getTime();
+    console.log("[calculateDateWithEachPattern]: isSameDateWithFirstNthWeekDate", isSameDateWithFirstNthWeekDate);
+    console.log("[calculateDateWithEachPattern]: isSameDateWithSecondNthWeekDate", isSameDateWithSecondNthWeekDate);
     const isSameDateWithPattern = (isSameDateWithFirstNthWeekDate || isSameDateWithSecondNthWeekDate);
     const isLessThanOrEqualToFirstNthWeek = publishStartDateData.nthWeek < firstDateOfWeekdayOfMonthData.nthWeek;
     const isGreaterThanSecondNthWeek = publishStartDateData.nthWeek > secondDateOfWeekdayOfMonthData.nthWeek;
@@ -154,10 +156,16 @@ function calcDateToPublish() {
         case PublishPattern.Tuesday_1_3:
         case PublishPattern.Friday_1_3:
           if (episode > 3) {
-            if (episode === 4 && isSameDateWithPattern) {
-              // 指定パターンの週のどちらかに一致している場合
-              switchableNthWeek = isSameDateWithFirstNthWeekDate ? 1 : 3;
-              console.log("[calculateDateWithEachPattern]: 1 or 3 switchableNthWeek", switchableNthWeek);
+            if ((episode === 4 || episode === 5) && isSameDateWithPattern) {
+              // 指定パターンの週のどちらかに一致している場合、対象の日付が第何週かを計算する
+              if (episode === 4 && isSameDateWithFirstNthWeekDate) {
+                switchableNthWeek = 1;
+              } else if (episode === 5 && isSameDateWithSecondNthWeekDate) {
+                switchableNthWeek = 3;
+              } else {
+                console.log("[calculateDateWithEachPattern]: else - not exec calculateWeekNumber: switchableNthWeek[%s]", switchableNthWeek);
+              }
+              console.log("[calculateDateWithEachPattern]: 1(2) or 3(4) switchableNthWeek", switchableNthWeek);
             } else if (episode === 5 && (isLessThanOrEqualToFirstNthWeek || isGreaterThanSecondNthWeek)) {
               switchableNthWeek = 1;
               console.log("[calculateDateWithEachPattern]: (isLessThanOrEqualToFirstNthWeek || isGreaterThanSecondNthWeek)[%s]", (isLessThanOrEqualToFirstNthWeek || isGreaterThanSecondNthWeek));
@@ -180,10 +188,15 @@ function calcDateToPublish() {
         case PublishPattern.Tuesday_2_4:
         case PublishPattern.Friday_2_4:
           if (episode > 3) {
-            if (episode === 4 && isSameDateWithPattern) {
-              // 指定パターンの週のどちらかに一致している場合
-              switchableNthWeek = isSameDateWithFirstNthWeekDate ? 2 : 4;
-              console.log("[calculateDateWithEachPattern]: 1 or 3 switchableNthWeek", switchableNthWeek);
+            if ((episode === 4 || episode === 5) && isSameDateWithPattern) {
+              // 指定パターンの週のどちらかに一致している場合、対象の日付が第何週かを計算する
+              if (episode === 4 && isSameDateWithFirstNthWeekDate) {
+                switchableNthWeek = 2;
+              } else if (episode === 5 && isSameDateWithSecondNthWeekDate) {
+                switchableNthWeek = 4;
+              } else {
+                console.log("[calculateDateWithEachPattern]: else - not exec calculateWeekNumber: switchableNthWeek[%s]", switchableNthWeek);
+              }
             } else if (episode === 5 && (isLessThanOrEqualToFirstNthWeek || isGreaterThanSecondNthWeek)) {
               switchableNthWeek = 2;
               console.log("[calculateDateWithEachPattern]: (isLessThanOrEqualToFirstNthWeek || isGreaterThanSecondNthWeek)[%s]", (isLessThanOrEqualToFirstNthWeek || isGreaterThanSecondNthWeek));
@@ -266,7 +279,6 @@ function calcDateToPublish() {
     console.log("[getFirstWeekdayOfMonth]: firstWeekdayDate:", firstWeekdayDate);
     return firstWeekdayDate;
   }
-
 
   // 日付が有効かどうかチェックする関数
   function isValidDate(date) {
@@ -573,6 +585,7 @@ function calcDateToPublish() {
     if (episode > 4) {
       const previousStartDate = new Date(getLastStartDateFromSheet(sheet5));
       const monthToAdd = getMonthToAddFromNthWeek(nthWeek);
+      console.log("[handleDoubleNthWeekOfMonth]: previousStartDate[%s]:", previousStartDate);
       console.log("[handleDoubleNthWeekOfMonth]: monthToAdd[%s]:", monthToAdd);
       let newStartDate;
       if (episode === 5 && isMoveUp) {
